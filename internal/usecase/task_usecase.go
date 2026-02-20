@@ -1,4 +1,4 @@
-package usecase
+﻿package usecase
 
 import (
 	"time"
@@ -7,15 +7,18 @@ import (
 	"clean-architecture-learning/internal/interface/repository"
 )
 
+// TaskUsecase はアプリ固有の操作手順（ユースケース）をまとめる。
 type TaskUsecase struct {
 	repo repository.TaskRepository
 	now  func() time.Time
 }
 
+// NewTaskUsecase は依存を注入してユースケースを生成する。
 func NewTaskUsecase(repo repository.TaskRepository, now func() time.Time) *TaskUsecase {
 	return &TaskUsecase{repo: repo, now: now}
 }
 
+// Add はタスクを追加するユースケース。
 func (u *TaskUsecase) Add(title string) (domain.Task, error) {
 	id := newID()
 	task, err := domain.NewTask(id, title, u.now())
@@ -28,10 +31,12 @@ func (u *TaskUsecase) Add(title string) (domain.Task, error) {
 	return task, nil
 }
 
+// List はタスク一覧を取得するユースケース。
 func (u *TaskUsecase) List() ([]domain.Task, error) {
 	return u.repo.FindAll()
 }
 
+// Done はタスクを完了にするユースケース。
 func (u *TaskUsecase) Done(id string) (domain.Task, error) {
 	task, err := u.repo.FindByID(id)
 	if err != nil {
@@ -48,6 +53,6 @@ func (u *TaskUsecase) Done(id string) (domain.Task, error) {
 }
 
 func newID() string {
-	// temporary simple ID; will replace later
+	// いったん簡易ID。後で差し替える。
 	return time.Now().Format("20060102150405.000000000")
 }
